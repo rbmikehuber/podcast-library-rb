@@ -43,11 +43,6 @@ class ExcerptRequest(BaseModel):
 def time_str_to_num(timeStr: str):
     return float(timeStr)
 
-def word_length(w: Word):
-    length=time_str_to_num(w.end_time) - time_str_to_num(w.start_time)
-    print(f"{w.word}: {length}s")
-    return length
-
 def get_temp_file_name():
     tmp_dir = tempfile._get_default_tempdir()
     return tmp_dir + "/" + next(tempfile._get_candidate_names())
