@@ -3,7 +3,7 @@ import { computed, ref, onMounted } from 'vue'
 import axios from 'axios'
 import fileDownload from 'js-file-download'
 import moment from 'moment'
-import { BASE_URL } from '../api'
+import { BASE_URL } from '../../api'
 
 type Word = {
     word: string
@@ -63,7 +63,15 @@ onMounted(() => {
         .then(r => {
             summary.value = r.data
         })
+
+    axios
+        .get(`${BASE_URL}/podcasts/${podcastId.value}/keywords`)
+        .then(r => {
+            console.log(r.data)
+            tags.value = r.data
+        })
 })
+
 
 const getSoundBite = (e: any) => {
     console.log(selectedWords.value)
@@ -102,11 +110,7 @@ const selectedWordsTimeText = computed(() => {
 document.body.addEventListener('mouseup', possibleSelectionChange)
 document.body.addEventListener('click', possibleSelectionChange)
 
-const tags=ref([
-    'F1',
-    'Spielberg',
-    'Max Verstappen'
-])
+const tags=ref<string[]>([])
 </script>
 
 <template>
