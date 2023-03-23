@@ -2,10 +2,10 @@ from google.cloud import speech
 from google.cloud import speech_v1p1beta1 as speech
 import json
 
-GCP_PROJECT="redbull-hack23szg-2116"
-AUDIO_FILE_URI="gs://podcasters/audio-files/msw_airton.mp3"
+GCP_PROJECT = "redbull-hack23szg-2116"
+AUDIO_FILE_URI = "gs://podcasters/audio-files/output.mp3"
 
-# Recognize speakers 
+# Recognize speakers
 # Adapted from https://cloud.google.com/speech-to-text/docs/multiple-voices?authuser=1
 
 client = speech.SpeechClient()
@@ -30,22 +30,39 @@ operation = client.long_running_recognize(config=config, audio=audio)
 
 response = operation.result(timeout=600)
 
-response_json = json.dumps(response)
-with open('response.json', 'r') as outfile:
-    outfile.write(response_json)
+# for result in response.results:
+#     print(result)
+#     for alternative in result.alternatives:
+#         print(alternative)
+# print("Transcript: {}".format(result.alternatives[0].transcript))
+# print("Confidence: {}".format(result.alternatives[0].confidence))
+
+# response_json = json.dumps(response)
+# with open('response.json', 'r') as outfile:
+#     outfile.write(response_json)
 
 # The transcript within each result is separate and sequential per result.
 # However, the words list within an alternative includes all the words
 # from all the results thus far. Thus, to get all the words with speaker
 # tags, you only have to take the words list from the last result:
 result = response.results[-1]
+# print(result)
+# print(json.dumps(result))
 
 words_info = result.alternatives[0].words
-
+print(words_info)
 # Printing out the output:
+json_out = {"words": []}
 for word_info in words_info:
-    print(
-        "word: '{}', speaker_tag: {}".format(word_info.word, word_info.speaker_tag)
+    json_out["words"].append(
+        {
+            "word": word_info.word,
+            "speaker_tag": word_info.speaker_tag,
+            "start_time": word_info.start_time.total_seconds(),
+            "end_time": word_info.end_time.total_seconds(),
+        }
     )
 
-
+print(json_out)
+with open("words.json", "w") as fh:
+    fh.write(json.dumps(json_out, indent=2))

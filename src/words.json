@@ -1,0 +1,106 @@
+{
+  "words": [
+    {
+      "word": "welcome",
+      "speaker_tag": 1,
+      "start_time": 0.2,
+      "end_time": 1.2
+    },
+    {
+      "word": "to",
+      "speaker_tag": 1,
+      "start_time": 1.2,
+      "end_time": 1.4
+    },
+    {
+      "word": "the",
+      "speaker_tag": 1,
+      "start_time": 1.4,
+      "end_time": 1.5
+    },
+    {
+      "word": "podcast",
+      "speaker_tag": 1,
+      "start_time": 1.5,
+      "end_time": 1.9
+    },
+    {
+      "word": "podcast",
+      "speaker_tag": 1,
+      "start_time": 1.9,
+      "end_time": 2.9
+    },
+    {
+      "word": "here's",
+      "speaker_tag": 1,
+      "start_time": 2.9,
+      "end_time": 3.2
+    },
+    {
+      "word": "my",
+      "speaker_tag": 1,
+      "start_time": 3.2,
+      "end_time": 3.4
+    },
+    {
+      "word": "guest",
+      "speaker_tag": 1,
+      "start_time": 3.4,
+      "end_time": 3.7
+    },
+    {
+      "word": "Daniel",
+      "speaker_tag": 1,
+      "start_time": 3.7,
+      "end_time": 4.2
+    },
+    {
+      "word": "Daniel",
+      "speaker_tag": 1,
+      "start_time": 4.2,
+      "end_time": 4.5
+    },
+    {
+      "word": "please",
+      "speaker_tag": 1,
+      "start_time": 4.5,
+      "end_time": 4.6
+    },
+    {
+      "word": "introduce",
+      "speaker_tag": 1,
+      "start_time": 4.6,
+      "end_time": 4.8
+    },
+    {
+      "word": "yourself",
+      "speaker_tag": 1,
+      "start_time": 4.8,
+      "end_time": 5.3
+    },
+    {
+      "word": "or",
+      "speaker_tag": 1,
+      "start_time": 5.3,
+      "end_time": 12.4
+    },
+    {
+      "word": "do",
+      "speaker_tag": 1,
+      "start_time": 12.4,
+      "end_time": 12.5
+    },
+    {
+      "word": "it",
+      "speaker_tag": 1,
+      "start_time": 12.5,
+      "end_time": 12.7
+    },
+    {
+      "word": "thanks",
+      "speaker_tag": 1,
+      "start_time": 12.7,
+      "end_time": 13.0
+    }
+  ]
+}
