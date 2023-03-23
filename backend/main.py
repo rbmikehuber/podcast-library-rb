@@ -7,8 +7,6 @@ from fastapi.responses import FileResponse
 import tempfile
 import openai
 
-# TODO: don't use these but rather a format like in ../src/output.mp3.json
-
 podcasts = [
     {
         "audio_file": "resources/audio-files/audio-files_msw_airton.mp3",
