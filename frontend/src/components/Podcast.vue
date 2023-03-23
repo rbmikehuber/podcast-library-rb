@@ -2,11 +2,12 @@
 import { computed, ref, onMounted } from 'vue'
 import axios from 'axios'
 import fileDownload from 'js-file-download'
+import moment from 'moment'
 
 type Word = {
     word: string
-    start_time: string
-    end_time: string
+    start_time: number
+    end_time: number
 }
 
 const podcastId = ref(0)
@@ -18,7 +19,10 @@ const transcriptText = computed(() => {
 })
 
 const getSelectedWords = (selectionEvent: any) => {
-    const { startCharIx, endCharIx } = 
+    if (!selectionEvent.anchorNode) {
+        return []
+    } else {
+        const { startCharIx, endCharIx } = 
         selectionEvent.anchorOffset < selectionEvent.extentOffset ? 
             {
                 startCharIx: selectionEvent.anchorOffset,
@@ -29,21 +33,20 @@ const getSelectedWords = (selectionEvent: any) => {
                 endCharIx: selectionEvent.anchorOffset
             }
 
-    const selectedWords : Word[] = []
-    let currentCharIx = 0
+        const selectedWords : Word[] = []
+        let currentCharIx = 0
 
-    for (let i = 0; i < words.value.length; i++) {
-        if (startCharIx <= currentCharIx && currentCharIx <= endCharIx) {
-            selectedWords.push(words.value[i])
+        for (let i = 0; i < words.value.length; i++) {
+            if (startCharIx <= currentCharIx && currentCharIx <= endCharIx) {
+                selectedWords.push(words.value[i])
+            }
+
+            currentCharIx += words.value[i].word.length + 1
         }
 
-        currentCharIx += words.value[i].word.length + 1
+        return selectedWords
     }
-
-    return selectedWords
 }
-
-
 
 onMounted(() => {
     axios
@@ -54,7 +57,7 @@ onMounted(() => {
 
 })
 
-const buttonClicked = (e: any) => {
+const getSoundBite = (e: any) => {
     console.log(selectedWords.value)
 
     const req = {
@@ -69,32 +72,82 @@ const buttonClicked = (e: any) => {
         .then(r => fileDownload(r.data, "excerpt.mp3"))
 }
 
-const onMouseUpTranscript = (e: any) => {
+const possibleSelectionChange = (e: any) => {
     const s = window.getSelection()
     selectedWords.value = getSelectedWords(s)
 }
 
+const formatSeconds = (seconds: number) => moment.utc(seconds*1000).format('HH:mm:ss')
+
+const wordsInTranscriptSelected = computed(() => selectedWords.value.length !== 0)
+
 const selectedWordsTimeText = computed(() => {
-    if (selectedWords.value.length === 0) {
+    if (!wordsInTranscriptSelected.value) {
         return ""
     } else {
         const startTime = selectedWords.value[0].start_time
         const endTime = selectedWords.value[selectedWords.value.length-1].end_time
-        return `${startTime}s - ${endTime}s`
+        return `${formatSeconds(startTime)} - ${formatSeconds(endTime)}`
     }
 })
 
+document.body.addEventListener('mouseup', possibleSelectionChange)
+document.body.addEventListener('click', possibleSelectionChange)
+
+const tags=ref([
+    'F1',
+    'Spielberg',
+    'Max Verstappen'
+])
 </script>
 
 <template>
-    <div class="container"></div>
-        <div class="child">
+    <h1>Podcast Insights</h1>
+    <div class="tag-container">
+        <div v-for="tag in tags" class="tag">{{ tag }}</div>
+    </div>
+    <div class="container">
+        <div class="child container-left">
+            <div class="summary">
+                <h3>Summary</h3>
+                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+            </div>
+            <div class="additionals">
+                <h3>Additionals</h3>
+                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+            </div>
             <p>{{ selectedWordsTimeText }}</p>
-            <button @click="buttonClicked">Sound Bite</button>
+            <button :disabled="!wordsInTranscriptSelected" @click="getSoundBite">Sound Bite</button>
         </div>
-        <div class="child transcript" @mouseup="onMouseUpTranscript">{{ transcriptText }}</div>
+        <div class="child transcript">
+            <h3>Transcript</h3>
+            <div>{{ transcriptText }}</div>
+        </div>
+    </div>
 </template>
 <style scoped>
+.container-left {
+    margin-right: 20px;
+}
+.additionals {
+    border: 2px solid yellow;
+    height: 300px;
+    overflow: auto;    
+}
+.summary {
+    border: 2px solid yellow;
+    margin-bottom: 10px;
+    height: 300px;
+    overflow: auto;
+}
+.tag-container {
+    display: flex;
+}
+.tag {
+    border: 1px solid lightblue;
+    flex: 1;
+    margin: 5px;
+}
 .container {
     display: flex;
 }
@@ -103,8 +156,9 @@ const selectedWordsTimeText = computed(() => {
     flex: 1;
 }
 
-.child.transcript {
-    margin-left: 20px;
+.transcript {
     border: 2px solid yellow;
+    height: 610px;
+    overflow: auto;
 }
 </style>
