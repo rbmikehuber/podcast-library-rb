@@ -6,6 +6,8 @@ import ffmpeg
 from fastapi.responses import FileResponse
 import tempfile
 import openai
+from fastapi.staticfiles import StaticFiles
+import os
 
 podcasts = [
     {
@@ -21,10 +23,14 @@ podcasts = [
 ]
 
 app = FastAPI()
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_methods=["*"]
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_credentials=True,
 )
 
 @app.get("/podcasts/{id}/words")
@@ -108,3 +114,6 @@ def get_excerpt(id: int, req: ExcerptRequest):
     )
 
     return FileResponse(tmp_file, media_type="audio/mpeg")
+
+if os.path.exists("dist"):
+    app.mount("/", StaticFiles(directory="dist", html=True), name="dist")
