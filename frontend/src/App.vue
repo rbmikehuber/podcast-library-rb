@@ -9,6 +9,9 @@ import Podcast from './components/Podcast.vue'
 </template>
 
 <style scoped>
+body {
+  background: #1E1E1E;
+}
 header {
   line-height: 1.5;
 }

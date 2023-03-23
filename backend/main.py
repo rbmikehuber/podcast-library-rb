@@ -10,12 +10,12 @@ import tempfile
 
 podcasts = [
     {
-        "audio_file": "resources/audio-files/audio-files_msw_mario.mp3",
-        "transcript": "resources/transcripts/transcripts_msw_mario.mp3-20230323024230.json"
+        "audio_file": "resources/audio-files/audio-files_msw_airton.mp3",
+        "transcript": "resources/transcripts/msw_airton.mp3.json"
     },
     {
-        "audio_file": "resources/audio-files/short_podcast.mp3",
-        "transcript": "resources/transcripts/transcripts_short_podcast.mp3-20230323030932.json"
+        "audio_file": "resources/audio-files/audio-files_msw_airton.mp3",
+        "transcript": "resources/transcripts/output.mp3.json"
     }
 ]
 
@@ -26,33 +26,27 @@ app.add_middleware(
     allow_methods=["*"]
 )
 
-
-@app.get("/podcasts/{id}/transcript")
-def read_transcript(id: int):
-    podcast = podcasts[id]
-    with open(podcast["transcript"], 'r') as f:
-        return json.loads(f.read())["results"][0]["alternatives"][0]["transcript"]
-
-
 @app.get("/podcasts/{id}/words")
 def read_words(id: int):
     podcast = podcasts[id]
     with open(podcast["transcript"], 'r') as f:
-        return json.loads(f.read())["results"][0]["alternatives"][0]["words"]
+        return json.loads(f.read())["words"]
 
 class Word(BaseModel):
     word: str
-    startTime: str
-    endTime: str
+    start_time: str
+    end_time: str
 
 class ExcerptRequest(BaseModel):
     words: list[Word]
 
 def time_str_to_num(timeStr: str):
-    return float(timeStr[:-1])
+    return float(timeStr)
 
 def word_length(w: Word):
-    return time_str_to_num(w.endTime) - time_str_to_num(w.startTime)
+    length=time_str_to_num(w.end_time) - time_str_to_num(w.start_time)
+    print(f"{w.word}: {length}s")
+    return length
 
 def get_temp_file_name():
     tmp_dir = tempfile._get_default_tempdir()
@@ -60,18 +54,17 @@ def get_temp_file_name():
 
 @app.post("/podcasts/{id}/excerpt")
 def get_excerpt(id: int, req: ExcerptRequest):
-    start_time = time_str_to_num(req.words[0].startTime)
-    length_seconds = sum([word_length(w) for w in req.words[1:]])
+    start_time = time_str_to_num(req.words[0].start_time)
+    end_time = time_str_to_num(req.words[-1].end_time)
 
-    print(f"Generating excerpt starting at {start_time}s, duration {length_seconds}s")
+    print(f"Generating excerpt from {start_time}s to {end_time}s")
 
     tmp_file = f"{get_temp_file_name()}.mp3"
 
-    print(tmp_file)
     podcast = podcasts[id]
     (
         ffmpeg
-        .input(podcast["audio_file"], ss=start_time, to=start_time+length_seconds)
+        .input(podcast["audio_file"], ss=start_time, to=end_time)
         .output(tmp_file)
         .run()
     )

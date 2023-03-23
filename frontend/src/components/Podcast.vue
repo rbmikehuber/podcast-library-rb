@@ -2,19 +2,20 @@
 import { computed, ref, onMounted } from 'vue'
 import axios from 'axios'
 import fileDownload from 'js-file-download'
+//import { } from '@cosmos/web'
 
 type Word = {
     word: string
-    startTime: string
-    endTime: string
+    start_time: string
+    end_time: string
 }
 
 const podcastId = ref(0)
 const words = ref<Word[]>([
     {
         word: "this",
-        startTime: "0.800s",
-        endTime: "1.200s"        
+        start_time: "0.800s",
+        end_time: "1.200s"        
     }
 ])
 
@@ -27,11 +28,11 @@ const getSelectedWords = (selectionEvent: any) => {
         selectionEvent.anchorOffset < selectionEvent.extentOffset ? 
             {
                 startCharIx: selectionEvent.anchorOffset,
-                endCharIx: selectionEvent.anchorOffset + selectionEvent.extentOffset - 1
+                endCharIx: selectionEvent.extentOffset
             } :
             {
                 startCharIx: selectionEvent.extentOffset,
-                endCharIx: selectionEvent.extentOffset + selectionEvent.anchorOffset - 1
+                endCharIx: selectionEvent.anchorOffset
             }
 
     const selectedWords : Word[] = []
