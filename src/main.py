@@ -1,4 +1,3 @@
-from google.cloud import speech
 from google.cloud import speech_v1p1beta1 as speech
 import json
 import logging
@@ -6,9 +5,6 @@ import logging
 GCP_PROJECT = "redbull-hack23szg-2116"
 AUDIO_FILENAME = "output.mp3"
 AUDIO_FILE_URI = f"gs://podcasters/audio-files/{AUDIO_FILENAME}"
-
-# Recognize speakers
-# Adapted from https://cloud.google.com/speech-to-text/docs/multiple-voices?authuser=1
 
 
 def main():
@@ -18,6 +14,8 @@ def main():
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
+    # Recognize speakers
+    # Adapted from https://cloud.google.com/speech-to-text/docs/multiple-voices?authuser=1
     client = speech.SpeechClient()
 
     audio = speech.RecognitionAudio(uri=AUDIO_FILE_URI)
@@ -60,7 +58,7 @@ def main():
     # print(json.dumps(result))
 
     words_info = result.alternatives[0].words
-    print(words_info)
+    logging.debug(words_info)
     # Printing out the output:
     json_out = {"words": []}
     for word_info in words_info:
