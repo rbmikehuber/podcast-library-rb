@@ -1,4 +1,4 @@
-# Setup
+# Initial Setup
 
 Prepare python env:
 ```
@@ -11,6 +11,21 @@ Setup GCP credentials:
 ```
 gcloud auth login
 gcloud auth application-default login
+```
+
+# Running
+
+Start the backend:
+```
+cd backend/
+uvicorn main:app --reload
+```
+
+Start the frontend:
+```
+cd frontend/
+npm ci
+npm run dev
 ```
 
 # Notes
