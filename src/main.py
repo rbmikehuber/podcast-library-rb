@@ -3,7 +3,8 @@ from google.cloud import speech_v1p1beta1 as speech
 import json
 
 GCP_PROJECT = "redbull-hack23szg-2116"
-AUDIO_FILE_URI = "gs://podcasters/audio-files/output.mp3"
+AUDIO_FILENAME = "output.mp3"
+AUDIO_FILE_URI = f"gs://podcasters/audio-files/{AUDIO_FILENAME}"
 
 # Recognize speakers
 # Adapted from https://cloud.google.com/speech-to-text/docs/multiple-voices?authuser=1
@@ -64,5 +65,5 @@ for word_info in words_info:
     )
 
 print(json_out)
-with open("words.json", "w") as fh:
+with open(f"{AUDIO_FILENAME}.json", "w") as fh:
     fh.write(json.dumps(json_out, indent=2))
