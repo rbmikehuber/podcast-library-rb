@@ -5,17 +5,20 @@ from pydantic import BaseModel
 import ffmpeg
 from fastapi.responses import FileResponse
 import tempfile
+import openai
 
 # TODO: don't use these but rather a format like in ../src/output.mp3.json
 
 podcasts = [
     {
         "audio_file": "resources/audio-files/audio-files_msw_airton.mp3",
-        "transcript": "resources/transcripts/msw_airton.mp3.json"
+        "transcript": "resources/transcripts/msw_airton.mp3.json",
+        "transcript_only": "resources/transcripts/msw_airton.txt"
     },
     {
         "audio_file": "resources/audio-files/audio-files_msw_airton.mp3",
-        "transcript": "resources/transcripts/output.mp3.json"
+        "transcript": "resources/transcripts/output.mp3.json",
+        "transcript_only": "resources/transcripts/output.txt"
     }
 ]
 
@@ -31,6 +34,48 @@ def read_words(id: int):
     podcast = podcasts[id]
     with open(podcast["transcript"], 'r') as f:
         return json.loads(f.read())["words"]
+
+@app.get("/podcasts/{id}/keywords")
+def get_keywords(id: int):
+    podcast = podcasts[id]
+    with open(podcast["transcript_only"], 'r') as f:
+        text = f.readlines()
+
+    response = openai.Completion.create(
+        model="text-davinci-003",
+        prompt=f"Extract keywords from this text:\n\n{text}",
+        temperature=0.5,
+        max_tokens=60,
+        top_p=1.0,
+        frequency_penalty=0.8,
+        presence_penalty=0.0
+    )
+    keywords_text = str.strip(response["choices"][0]["text"])
+    keywords_text = keywords_text.split("Keywords: ")[-1]
+    keywords = keywords_text.split(", ")
+    return json.dumps(keywords)
+
+
+# !! This is actually quite a bit slower than expected.
+# It took about 1.5 minutes for "msw_airton.txt"
+@app.get("/podcasts/{id}/summary")
+def get_summary(id: int):
+    podcast = podcasts[id]
+    with open(podcast["transcript_only"], 'r') as f:
+        text = f.readlines()
+
+    response = openai.Completion.create(
+        model="text-davinci-003",
+        prompt=f"{text}\n\nTl;dr",
+        temperature=0.7,
+        max_tokens=60,
+        top_p=1.0,
+        frequency_penalty=0.0,
+        presence_penalty=1
+    )
+    summary = str.strip(response["choices"][0]["text"])
+    return summary
+
 
 class Word(BaseModel):
     word: str
