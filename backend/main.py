@@ -47,7 +47,7 @@ def get_keywords(id: int):
 
     response = openai.Completion.create(
         model="text-davinci-003",
-        prompt=f"Extract keywords from this text:\n\n{text}",
+        prompt=f"Extract the 5 most imporant keywords from this text and provide them as a comma-separated list:\n\n{text}",
         temperature=0.5,
         max_tokens=60,
         top_p=1.0,
@@ -57,7 +57,7 @@ def get_keywords(id: int):
     keywords_text = str.strip(response["choices"][0]["text"])
     keywords_text = keywords_text.split("Keywords: ")[-1]
     keywords = keywords_text.split(", ")
-    return json.dumps(keywords)
+    return keywords
 
 
 # !! This is actually quite a bit slower than expected.
