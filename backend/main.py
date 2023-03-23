@@ -76,4 +76,4 @@ def get_excerpt(id: int, req: ExcerptRequest):
         .run()
     )
 
-    return FileResponse(tmp_file)
+    return FileResponse(tmp_file, media_type="audio/mpeg")

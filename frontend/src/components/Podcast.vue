@@ -68,7 +68,10 @@ const buttonClicked = (e: any) => {
     }
 
     axios
-        .post(`http://localhost:8000/podcasts/${podcastId.value}/excerpt`, req)
+        .post(`http://localhost:8000/podcasts/${podcastId.value}/excerpt`, req,
+        {
+            responseType: 'arraybuffer'
+        })
         .then(r => fileDownload(r.data, "excerpt.mp3"))
 }
 
