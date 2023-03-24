@@ -8,6 +8,7 @@ import tempfile
 import openai
 from fastapi.staticfiles import StaticFiles
 import os
+import random
 
 podcasts = [
     {
@@ -54,26 +55,28 @@ def read_words(id: int):
 @app.get("/podcasts/{id}/keywords")
 def get_keywords(id: int):
     podcast = podcasts[id]
+
+    keywords = []
     with open(podcast["transcript_only"], 'r') as f:
-        text = f.read()
+        for chunk in _read_chunked(f):
+            response = openai.Completion.create(
+                model="text-davinci-003",
+                prompt=f"Extract the 5 most important keywords from this text and provide them as a comma-separated list:\n\n{chunk}",
+                temperature=0.5,
+                max_tokens=600,
+                top_p=1.0,
+                frequency_penalty=0.8,
+                presence_penalty=0.0
+            )
+            keywords_text = str.strip(response["choices"][0]["text"])
+            keywords_text = keywords_text.split("Keywords: ")[-1]
+            keywords.extend(keywords_text.split(", "))
+            print(keywords)
 
-    response = openai.Completion.create(
-        model="text-davinci-003",
-        prompt=f"Extract the 5 most important keywords from this text and provide them as a comma-separated list:\n\n{text}",
-        temperature=0.5,
-        max_tokens=60,
-        top_p=1.0,
-        frequency_penalty=0.8,
-        presence_penalty=0.0
-    )
-    keywords_text = str.strip(response["choices"][0]["text"])
-    keywords_text = keywords_text.split("Keywords: ")[-1]
-    keywords = keywords_text.split(", ")
-    return keywords
+    keywords = [keyword for keyword in keywords if len(keyword.split()) == 1]
+    return random.sample(keywords, 5)
 
 
-# !! This is actually quite a bit slower than expected.
-# It took about 1.5 minutes for "msw_airton.txt"
 @app.get("/podcasts/{id}/summary")
 def get_summary(id: int):
     podcast = podcasts[id]
@@ -101,7 +104,11 @@ def _get_openai_summary(text):
     return summary
 
 
-def _read_chunked(fh, chunk_size=10240):
+# To get around the token size error:
+# openai.error.InvalidRequestError: This model's maximum context length is 4097 tokens,
+# however you requested 10736 tokens (10136 in your prompt; 600 for the completion).
+# Please reduce your prompt; or completion length.
+def _read_chunked(fh, chunk_size=8192):
     while True:
         data = fh.read(chunk_size)
         if not data:
