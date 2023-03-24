@@ -3,6 +3,7 @@ import { computed, ref, onMounted } from 'vue'
 import axios from 'axios'
 import fileDownload from 'js-file-download'
 import moment from 'moment'
+import { BASE_URL } from '../../api'
 
 type Word = {
     word: string
@@ -48,14 +49,29 @@ const getSelectedWords = (selectionEvent: any) => {
     }
 }
 
+const summary = ref("")
+
 onMounted(() => {
     axios
-        .get(`http://localhost:8000/podcasts/${podcastId.value}/words`)
+        .get(`${BASE_URL}/podcasts/${podcastId.value}/words`)
         .then(r => {
             words.value = r.data
         })
 
+    axios
+        .get(`${BASE_URL}/podcasts/${podcastId.value}/summary`)
+        .then(r => {
+            summary.value = r.data
+        })
+
+    axios
+        .get(`${BASE_URL}/podcasts/${podcastId.value}/keywords`)
+        .then(r => {
+            console.log(r.data)
+            tags.value = r.data
+        })
 })
+
 
 const getSoundBite = (e: any) => {
     console.log(selectedWords.value)
@@ -65,7 +81,7 @@ const getSoundBite = (e: any) => {
     }
 
     axios
-        .post(`http://localhost:8000/podcasts/${podcastId.value}/excerpt`, req,
+        .post(`${BASE_URL}/podcasts/${podcastId.value}/excerpt`, req,
         {
             responseType: 'arraybuffer'
         })
@@ -94,11 +110,7 @@ const selectedWordsTimeText = computed(() => {
 document.body.addEventListener('mouseup', possibleSelectionChange)
 document.body.addEventListener('click', possibleSelectionChange)
 
-const tags=ref([
-    'F1',
-    'Spielberg',
-    'Max Verstappen'
-])
+const tags=ref<string[]>([])
 </script>
 
 <template>
@@ -110,7 +122,7 @@ const tags=ref([
         <div class="child container-left">
             <div class="summary">
                 <h3>Summary</h3>
-                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                <p>{{  summary }}</p>
             </div>
             <div class="additionals">
                 <h3>Additionals</h3>

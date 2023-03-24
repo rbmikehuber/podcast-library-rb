@@ -6,8 +6,8 @@ import ffmpeg
 from fastapi.responses import FileResponse
 import tempfile
 import openai
-
-# TODO: don't use these but rather a format like in ../src/output.mp3.json
+from fastapi.staticfiles import StaticFiles
+import os
 
 podcasts = [
     {
@@ -23,10 +23,14 @@ podcasts = [
 ]
 
 app = FastAPI()
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_methods=["*"]
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_credentials=True,
 )
 
 @app.get("/podcasts/{id}/words")
@@ -43,7 +47,7 @@ def get_keywords(id: int):
 
     response = openai.Completion.create(
         model="text-davinci-003",
-        prompt=f"Extract keywords from this text:\n\n{text}",
+        prompt=f"Extract the 5 most imporant keywords from this text and provide them as a comma-separated list:\n\n{text}",
         temperature=0.5,
         max_tokens=60,
         top_p=1.0,
@@ -53,7 +57,7 @@ def get_keywords(id: int):
     keywords_text = str.strip(response["choices"][0]["text"])
     keywords_text = keywords_text.split("Keywords: ")[-1]
     keywords = keywords_text.split(", ")
-    return json.dumps(keywords)
+    return keywords
 
 
 # !! This is actually quite a bit slower than expected.
@@ -110,3 +114,6 @@ def get_excerpt(id: int, req: ExcerptRequest):
     )
 
     return FileResponse(tmp_file, media_type="audio/mpeg")
+
+if os.path.exists("dist"):
+    app.mount("/", StaticFiles(directory="dist", html=True), name="dist")
