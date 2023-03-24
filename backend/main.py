@@ -33,6 +33,10 @@ app.add_middleware(
     allow_credentials=True,
 )
 
+@app.get("/podcasts")
+def get_podcasts():
+    return list(range(0, len(podcasts)))
+
 @app.get("/podcasts/{id}/words")
 def read_words(id: int):
     podcast = podcasts[id]

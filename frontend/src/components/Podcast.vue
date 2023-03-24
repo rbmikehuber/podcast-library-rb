@@ -12,6 +12,7 @@ type Word = {
 }
 
 const podcastId = ref(0)
+const podcastIds = ref([0])
 const words = ref<Word[]>([])
 const selectedWords = ref<Word[]>([])
 
@@ -51,7 +52,10 @@ const getSelectedWords = (selectionEvent: any) => {
 
 const summary = ref("")
 
-onMounted(() => {
+const fetchDataFromApi = () => {
+    tags.value = []
+    summary.value = ""
+
     axios
         .get(`${BASE_URL}/podcasts/${podcastId.value}/words`)
         .then(r => {
@@ -70,8 +74,16 @@ onMounted(() => {
             console.log(r.data)
             tags.value = r.data
         })
-})
 
+        axios
+        .get(`${BASE_URL}/podcasts`)
+        .then(r => {
+            console.log(r.data)
+            podcastIds.value = r.data
+        })        
+}
+
+onMounted(fetchDataFromApi)
 
 const getSoundBite = (e: any) => {
     console.log(selectedWords.value)
@@ -115,6 +127,9 @@ const tags=ref<string[]>([])
 
 <template>
     <h1>Podcast Insights</h1>
+    <select @change="fetchDataFromApi" v-model="podcastId">
+        <option v-for="id in podcastIds" :value="id">{{ id }}</option>
+    </select>
     <div class="tag-container">
         <div v-for="tag in tags" class="tag">{{ tag }}</div>
     </div>
