@@ -31,10 +31,13 @@ npm run dev
 # Adding a podcast to the app
 
 1. Upload the podcast audio file to a GCP storage bucket.
-2. Use `src/main.py` to transcribe the podcast into a JSON file.
+2. Use `src/main.py` to transcribe the podcast into a JSON file (be sure to set the correct `language_code`!).
 3. Put the podcast audio file into `backend/resources/audio-files/`.
 4. Put the transcript JSON into `backend/resources/transcripts`.
-5. Add the two files to the `podcasts` array in `backend/main.py`.
+5. Add the two files to the `podcasts` array in `backend/main.py`:
+    - The podcast audio file with key `audio_file`.
+    - The transcript JSON with key `transcript`.
+    - Add a nice name with key `name`.
 
 ## Addding the full transcript text
 1. After you have already uploaded the audio file to the GCP bucket (step 1 above)
@@ -46,6 +49,7 @@ npm run dev
 ```python
 podcasts = [
     {
+        "name": "Airton Cozzolino interview",
         "audio_file": "resources/audio-files/audio-files_msw_airton.mp3",
         "transcript": "resources/transcripts/msw_airton.mp3.json",
         "transcript_only": "resources/transcripts/msw_airton.txt"

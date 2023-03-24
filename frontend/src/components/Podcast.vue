@@ -138,7 +138,10 @@ const tags=ref<string[]>([])
 </script>
 
 <template>
-    <h1>Podcast Insights</h1>
+    <div class="title-container">
+        <div class="title-logo"><img src="/assets/redbullcom-logo.svg?data"/></div>
+        <div><h1>Podcast Insights</h1></div>
+    </div>
     <select @change="fetchDataFromApi" v-model="podcastId">
         <option v-for="p in podcasts" :value="p.id">{{ p.name }}</option>
     </select>
@@ -179,6 +182,12 @@ const tags=ref<string[]>([])
     margin-bottom: 10px;
     height: 300px;
     overflow: auto;
+}
+.title-container {
+    display: flex;
+}
+.title-logo {
+    padding-right: 20px;
 }
 .tag-container {
     display: flex;
