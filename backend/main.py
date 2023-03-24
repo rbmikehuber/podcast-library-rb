@@ -49,7 +49,7 @@ def read_words(id: int):
 def get_keywords(id: int):
     podcast = podcasts[id]
     with open(podcast["transcript_only"], 'r') as f:
-        text = f.readlines()
+        text = f.read()
 
     response = openai.Completion.create(
         model="text-davinci-003",
@@ -72,7 +72,7 @@ def get_keywords(id: int):
 def get_summary(id: int):
     podcast = podcasts[id]
     with open(podcast["transcript_only"], 'r') as f:
-        text = f.readlines()
+        text = f.read()
 
     response = openai.Completion.create(
         model="text-davinci-003",
