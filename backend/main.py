@@ -53,7 +53,7 @@ def get_keywords(id: int):
 
     response = openai.Completion.create(
         model="text-davinci-003",
-        prompt=f"Extract the 5 most imporant keywords from this text and provide them as a comma-separated list:\n\n{text}",
+        prompt=f"Extract the 5 most important keywords from this text and provide them as a comma-separated list:\n\n{text}",
         temperature=0.5,
         max_tokens=60,
         top_p=1.0,
