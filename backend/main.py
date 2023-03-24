@@ -21,6 +21,12 @@ podcasts = [
         "audio_file": "resources/audio-files/output.mp3",
         "transcript": "resources/transcripts/output.mp3.json",
         "transcript_only": "resources/transcripts/output.txt"
+    },
+    {
+        "name": "Long, Bergwelten Podcast",
+        "audio_file": "resources/audio-files/bergwelten_2023_f02_februar_v1_230209.mp3",
+        "transcript": "resources/transcripts/bergwelten_2023_f02_februar_v1_230209.mp3.json",
+        "transcript_only": "resources/transcripts/bergwelten_2023_f02_februar_v1_230209.txt"
     }
 ]
 
@@ -71,9 +77,16 @@ def get_keywords(id: int):
 @app.get("/podcasts/{id}/summary")
 def get_summary(id: int):
     podcast = podcasts[id]
-    with open(podcast["transcript_only"], 'r') as f:
-        text = f.read()
 
+    text = ""
+    with open(podcast["transcript_only"], 'r') as f:
+        for chunk in _read_chunked(f):
+            text += f" {_get_openai_summary(chunk)}"
+
+    return _get_openai_summary(text)
+
+
+def _get_openai_summary(text):
     response = openai.Completion.create(
         model="text-davinci-003",
         prompt=f"{text}\n\nTl;dr",
@@ -84,7 +97,16 @@ def get_summary(id: int):
         presence_penalty=1
     )
     summary = str.strip(response["choices"][0]["text"])
+
     return summary
+
+
+def _read_chunked(fh, chunk_size=10240):
+    while True:
+        data = fh.read(chunk_size)
+        if not data:
+            break
+        yield data
 
 
 class Word(BaseModel):
