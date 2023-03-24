@@ -56,33 +56,41 @@ const getSelectedWords = (selectionEvent: any) => {
 
 const summary = ref("")
 
+const summaryLoading = ref(true)
+const tagsLoading = ref(true)
+const transcriptLoading = ref(true)
+
 const fetchDataFromApi = () => {
     tags.value = []
     summary.value = ""
+    summaryLoading.value = true
+    tagsLoading.value = true
+    transcriptLoading.value = true
 
     axios
         .get(`${BASE_URL}/podcasts/${podcastId.value}/words`)
         .then(r => {
             words.value = r.data
+            transcriptLoading.value = false
         })
 
     axios
         .get(`${BASE_URL}/podcasts/${podcastId.value}/summary`)
         .then(r => {
             summary.value = r.data
+            summaryLoading.value = false
         })
 
     axios
         .get(`${BASE_URL}/podcasts/${podcastId.value}/keywords`)
         .then(r => {
-            console.log(r.data)
             tags.value = r.data
+            tagsLoading.value = false
         })
 
         axios
         .get(`${BASE_URL}/podcasts`)
         .then(r => {
-            console.log(r.data)
             podcasts.value = r.data
         })        
 }
@@ -135,13 +143,15 @@ const tags=ref<string[]>([])
         <option v-for="p in podcasts" :value="p.id">{{ p.name }}</option>
     </select>
     <div class="tag-container">
+        <span v-if="tagsLoading"><i>Loading...</i></span>
         <div v-for="tag in tags" class="tag">{{ tag }}</div>
     </div>
     <div class="container">
         <div class="child container-left">
             <div class="summary content-container">
                 <h3>Summary</h3>
-                <p>{{  summary }}</p>
+                <span v-if="summaryLoading"><i>Loading...</i></span>
+                <span v-if="!summaryLoading">{{  summary }}</span>
             </div>
             <div class="additionals content-container">
                 <h3>Additionals</h3>
@@ -152,7 +162,8 @@ const tags=ref<string[]>([])
         </div>
         <div class="child transcript content-container">
             <h3>Transcript</h3>
-            <div>{{ transcriptText }}</div>
+            <span v-if="transcriptLoading"><i>Loading...</i></span>
+            <span v-if="!transcriptLoading">{{  transcriptText }}</span>
         </div>
     </div>
 </template>
