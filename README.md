@@ -28,6 +28,14 @@ npm ci
 npm run dev
 ```
 
+# Adding a podcast to the app
+
+1. Upload the podcast audio file to a GCP storage bucket.
+2. Use `src/main.py` to transcribe the podcast into a JSON file.
+3. Put the podcast audio file into `backend/resources/audio-files/`.
+4. Put the transcript JSON into `backend/resources/transcripts`.
+5. Add the two files to the `podcasts` array in `backend/main.py`.
+
 # Notes
 
 Find the sample rate of an MP3:
