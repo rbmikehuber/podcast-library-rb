@@ -16,6 +16,7 @@ const podcasts = ref([{
     "name": "",
     "id": 0
 }])
+
 const words = ref<Word[]>([])
 const selectedWords = ref<Word[]>([])
 
@@ -138,18 +139,18 @@ const tags=ref<string[]>([])
     </div>
     <div class="container">
         <div class="child container-left">
-            <div class="summary">
+            <div class="summary content-container">
                 <h3>Summary</h3>
                 <p>{{  summary }}</p>
             </div>
-            <div class="additionals">
+            <div class="additionals content-container">
                 <h3>Additionals</h3>
                 <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
             </div>
             <p>{{ selectedWordsTimeText }}</p>
             <button :disabled="!wordsInTranscriptSelected" @click="getSoundBite">Sound Bite</button>
         </div>
-        <div class="child transcript">
+        <div class="child transcript content-container">
             <h3>Transcript</h3>
             <div>{{ transcriptText }}</div>
         </div>
@@ -160,12 +161,10 @@ const tags=ref<string[]>([])
     margin-right: 20px;
 }
 .additionals {
-    border: 2px solid yellow;
     height: 300px;
     overflow: auto;    
 }
 .summary {
-    border: 2px solid yellow;
     margin-bottom: 10px;
     height: 300px;
     overflow: auto;
@@ -175,6 +174,7 @@ const tags=ref<string[]>([])
 }
 .tag {
     border: 1px solid lightblue;
+    border-radius: 5px;
     flex: 1;
     margin: 5px;
 }
@@ -187,8 +187,13 @@ const tags=ref<string[]>([])
 }
 
 .transcript {
-    border: 2px solid yellow;
     height: 610px;
     overflow: auto;
+}
+
+.content-container {
+    border: 1px solid lightyellow;
+    border-radius: 5px;
+    padding: 10px;
 }
 </style>
