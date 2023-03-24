@@ -3,7 +3,7 @@ import json
 import logging
 
 GCP_PROJECT = "redbull-hack23szg-2116"
-AUDIO_FILENAME = "output.mp3"
+AUDIO_FILENAME = "bergwelten_2023_f02_februar_v1_230209.mp3"
 AUDIO_FILE_URI = f"gs://podcasters/audio-files/{AUDIO_FILENAME}"
 
 
@@ -29,14 +29,14 @@ def main():
     config = speech.RecognitionConfig(
         encoding=speech.RecognitionConfig.AudioEncoding.MP3,
         sample_rate_hertz=44100,
-        language_code="en-US",
+        language_code="de-DE",
         diarization_config=diarization_config,
     )
 
     logging.info("Waiting for operation to complete...")
     operation = client.long_running_recognize(config=config, audio=audio)
 
-    response = operation.result(timeout=600)
+    response = operation.result(timeout=6000)
 
     # for result in response.results:
     #     print(result)

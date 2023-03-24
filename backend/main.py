@@ -83,23 +83,23 @@ def get_summary(id: int):
 
     text = ""
     with open(podcast["transcript_only"], 'r') as f:
-        for chunk in _read_chunked(f):
-            text += f" {_get_openai_summary(chunk)}"
-
-    return _get_openai_summary(text)
-
+        chunks = list(_read_chunked(f))
+        if len(chunks) > 1:
+            for chunk in chunks:
+                text += f" {_get_openai_summary(chunk)}"
+                return _get_openai_summary(text)
+        else:
+            return _get_openai_summary(chunks[0])
 
 def _get_openai_summary(text):
-    response = openai.Completion.create(
-        model="text-davinci-003",
-        prompt=f"{text}\n\nTl;dr",
-        temperature=0.7,
-        max_tokens=60,
-        top_p=1.0,
-        frequency_penalty=0.0,
-        presence_penalty=1
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages= [
+            {"role": "user", "content": f"{text}\n\nTl;dr" }
+        ]
     )
-    summary = str.strip(response["choices"][0]["text"])
+    print(response)
+    summary = str.strip(response["choices"][0]["message"]["content"])
 
     return summary
 
