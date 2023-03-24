@@ -11,12 +11,14 @@ import os
 
 podcasts = [
     {
+        "name": "Airton Cozzolino interview",
         "audio_file": "resources/audio-files/audio-files_msw_airton.mp3",
         "transcript": "resources/transcripts/msw_airton.mp3.json",
         "transcript_only": "resources/transcripts/msw_airton.txt"
     },
     {
-        "audio_file": "resources/audio-files/audio-files_msw_airton.mp3",
+        "name": "Small test podcast",
+        "audio_file": "resources/audio-files/output.mp3",
         "transcript": "resources/transcripts/output.mp3.json",
         "transcript_only": "resources/transcripts/output.txt"
     }
@@ -35,7 +37,7 @@ app.add_middleware(
 
 @app.get("/podcasts")
 def get_podcasts():
-    return list(range(0, len(podcasts)))
+    return [ { "id": i, "name": p["name"] } for i, p in enumerate(podcasts)]
 
 @app.get("/podcasts/{id}/words")
 def read_words(id: int):

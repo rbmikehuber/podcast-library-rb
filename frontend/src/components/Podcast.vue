@@ -12,7 +12,10 @@ type Word = {
 }
 
 const podcastId = ref(0)
-const podcastIds = ref([0])
+const podcasts = ref([{
+    "name": "",
+    "id": 0
+}])
 const words = ref<Word[]>([])
 const selectedWords = ref<Word[]>([])
 
@@ -79,7 +82,7 @@ const fetchDataFromApi = () => {
         .get(`${BASE_URL}/podcasts`)
         .then(r => {
             console.log(r.data)
-            podcastIds.value = r.data
+            podcasts.value = r.data
         })        
 }
 
@@ -128,7 +131,7 @@ const tags=ref<string[]>([])
 <template>
     <h1>Podcast Insights</h1>
     <select @change="fetchDataFromApi" v-model="podcastId">
-        <option v-for="id in podcastIds" :value="id">{{ id }}</option>
+        <option v-for="p in podcasts" :value="p.id">{{ p.name }}</option>
     </select>
     <div class="tag-container">
         <div v-for="tag in tags" class="tag">{{ tag }}</div>
